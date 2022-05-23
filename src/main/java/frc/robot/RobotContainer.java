@@ -17,13 +17,13 @@ import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import java.io.FileReader;
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import com.opencsv.CSVReader;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,28 +37,10 @@ public class RobotContainer {
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
-  private Field2d field2d = new Field2d();
-
-  public static final class TimePose2d {
-    private double m_time;
-    private Pose2d m_pose;
-
-    public TimePose2d(double time, Pose2d pose) {
-      m_time = time;
-      m_pose = pose;
-    }
-
-    public double getTime() {
-      return m_time;
-    }
-
-    public Pose2d getPose() {
-      return m_pose;
-    }
-  }
-
-  private final ArrayList<TimePose2d> robotPoses = new ArrayList<>();
+  private final Field2d field2d = new Field2d();
   private Pose2d currentPose = new Pose2d();
+
+  private final TreeMap<Double,Pose2d> robotPoses = new TreeMap<>();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -68,7 +50,7 @@ public class RobotContainer {
       try {
         // Create an object of filereader
         // class with CSV file as a parameter.
-        FileReader filereader = new FileReader("deploy/FRC_20220515_232043.csv");
+        FileReader filereader = new FileReader("src/main/deploy/FRC_20220523_013329.csv");
 
         // create csvReader object passing
         // file reader as a parameter
@@ -89,7 +71,7 @@ public class RobotContainer {
             y = Double.parseDouble(poseParts[1]);
             angle = Double.parseDouble(poseParts[2]);
             time = Double.parseDouble(timeString);
-            robotPoses.add(new TimePose2d(time,new Pose2d(new Translation2d(x,y),new Rotation2d(angle))));
+            robotPoses.put(time,new Pose2d(new Translation2d(x,y),new Rotation2d(angle)));
           }
 
         }
@@ -119,8 +101,12 @@ public class RobotContainer {
   }
 
   public void simulationPeriodic() {
-    Optional<TimePose2d> c = robotPoses.stream().filter(timePose2d -> timePose2d.getTime() < Timer.getMatchTime()).findFirst();
-    c.ifPresent(timePose2d -> currentPose = timePose2d.getPose());
-    field2d.setRobotPose(currentPose);
+    try {
+      field2d.setRobotPose(
+              robotPoses.floorEntry(
+                      Timer.getFPGATimestamp()
+              ).getValue());
+    } catch(NullPointerException ignored) {
+    }
   }
 }
