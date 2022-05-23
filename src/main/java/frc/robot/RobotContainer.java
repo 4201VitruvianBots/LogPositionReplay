@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,8 +43,9 @@ public class RobotContainer {
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   private final Field2d field2d = new Field2d();
-  private Pose2d currentPose = new Pose2d();
   private double currentTime = 0;
+  private double endTime;
+  private double lastLoopTime = 0;
   private boolean playing = true;
 
   private final TreeMap<Double,Pose2d> robotPoses = new TreeMap<>();
@@ -52,32 +54,39 @@ public class RobotContainer {
   public RobotContainer() {
     SmartDashboard.putData("Field2d",field2d);
     SmartDashboard.putNumber("Time", 0);
+    SmartDashboard.putData("\u25b6", new InstantCommand().andThen(this::play));
+    SmartDashboard.putData("\u2358", new InstantCommand().andThen(this::pause));
     // Configure the button bindings
     configureButtonBindings();
+    int poseEntryId = 0;
       try {
-        DataLogReader reader = new DataLogReader("src/main/deploy/FRC_20220523_024716.csv");
-
-        String timeString, name, value;
+        DataLogReader reader = new DataLogReader("src/main/deploy/FRC_20220523_024716.wpilog");
         String[] poseParts;
-        double time, x, y, angle;
+        double time;
+        double x, y, angle;
 
         for (DataLogRecord record : reader) {
-//          if (record.name.equals("/pose")) {
-//            poseParts = value.split(",");
-//            x = Double.parseDouble(poseParts[0]);
-//            y = Double.parseDouble(poseParts[1]);
-//            angle = Double.parseDouble(poseParts[2]);
-//            time = Double.parseDouble(timeString);
-//            robotPoses.put(time, new Pose2d(new Translation2d(x, y), new Rotation2d(angle)));
-//          }
+          if (record.isStart()) {
+            if (record.getStartData().name.equals("/pose")) {
+              poseEntryId = record.getStartData().entry;
+            }
+          } else if (record.isFinish()) {
+            if (record.getFinishEntry() == poseEntryId) {
+              endTime = record.getTimestamp() / 1000000.0;
+            }
+          } else if (record.getEntry() == poseEntryId) {
+            poseParts = record.getString().split(",");
+            x = Double.parseDouble(poseParts[0]);
+            y = Double.parseDouble(poseParts[1]);
+            angle = Double.parseDouble(poseParts[2]);
+            time = record.getTimestamp() / 1000000.0;
+            robotPoses.put(time, new Pose2d(new Translation2d(x, y), new Rotation2d(angle)));
+          }
         }
-
-//        csvReader.close();
     } catch (Exception e) {
         e.printStackTrace();
     }
-
-      PrintLog.printLog(new String[] {"src/main/deploy/FRC_20220523_024716.csv"});
+        SmartDashboard.putNumber("Max", endTime);
   }
 
   /**
@@ -99,15 +108,27 @@ public class RobotContainer {
   }
 
   public void simulationPeriodic() {
-//    try {
-//      field2d.setRobotPose(
-//              robotPoses.floorEntry(
-//                      Timer.getFPGATimestamp()
-//              ).getValue());
-//    } catch(NullPointerException ignored) {}
-//
-//    if (playing) {
-////      currentTime += Timer.
-//    }
+    currentTime = SmartDashboard.getNumber("Time", currentTime);
+    try {
+      field2d.setRobotPose(
+              robotPoses.floorEntry(
+                      Timer.getFPGATimestamp()
+              ).getValue());
+      System.out.println(robotPoses.floorEntry(currentTime).getValue());
+    } catch(NullPointerException ignored) {}
+    if (playing) {
+      currentTime += Timer.getFPGATimestamp() - lastLoopTime;
+      SmartDashboard.putNumber("Time", currentTime);
+      lastLoopTime = Timer.getFPGATimestamp();
+    }
+  }
+
+  public void play() {
+    lastLoopTime = Timer.getFPGATimestamp();
+    playing = true;
+  }
+
+  public void pause() {
+    playing = false;
   }
 }

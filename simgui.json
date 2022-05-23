@@ -4,7 +4,9 @@
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/ExampleSubsystem": "Subsystem",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
-      "/SmartDashboard/Field2d": "Field2d"
+      "/SmartDashboard/Field2d": "Field2d",
+      "/SmartDashboard/⍘": "Command",
+      "/SmartDashboard/▶": "Command"
     },
     "windows": {
       "/SmartDashboard/Field2d": {
