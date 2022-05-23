@@ -7,6 +7,10 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.util.datalog.DataLogEntry;
+import edu.wpi.first.util.datalog.DataLogIterator;
+import edu.wpi.first.util.datalog.DataLogReader;
+import edu.wpi.first.util.datalog.DataLogRecord;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -51,38 +55,29 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
       try {
-        // Create an object of filereader
-        // class with CSV file as a parameter.
-        FileReader filereader = new FileReader("src/main/deploy/FRC_20220523_024716.csv");
+        DataLogReader reader = new DataLogReader("src/main/deploy/FRC_20220523_024716.csv");
 
-        // create csvReader object passing
-        // file reader as a parameter
-        CSVReader csvReader = new CSVReader(filereader);
-        String[] nextRecord;
-
-        // we are going to read data line by line
         String timeString, name, value;
         String[] poseParts;
         double time, x, y, angle;
-        while ((nextRecord = csvReader.readNext()) != null) {
-          timeString = nextRecord[0];
-          name = nextRecord[1];
-          value = nextRecord[2];
-          if (name.equals("/pose")) {
-            poseParts = value.split(",");
-            x = Double.parseDouble(poseParts[0]);
-            y = Double.parseDouble(poseParts[1]);
-            angle = Double.parseDouble(poseParts[2]);
-            time = Double.parseDouble(timeString);
-            robotPoses.put(time,new Pose2d(new Translation2d(x,y),new Rotation2d(angle)));
-          }
 
+        for (DataLogRecord record : reader) {
+//          if (record.name.equals("/pose")) {
+//            poseParts = value.split(",");
+//            x = Double.parseDouble(poseParts[0]);
+//            y = Double.parseDouble(poseParts[1]);
+//            angle = Double.parseDouble(poseParts[2]);
+//            time = Double.parseDouble(timeString);
+//            robotPoses.put(time, new Pose2d(new Translation2d(x, y), new Rotation2d(angle)));
+//          }
         }
 
-        csvReader.close();
+//        csvReader.close();
     } catch (Exception e) {
         e.printStackTrace();
     }
+
+      PrintLog.printLog(new String[] {"src/main/deploy/FRC_20220523_024716.csv"});
   }
 
   /**
@@ -104,15 +99,15 @@ public class RobotContainer {
   }
 
   public void simulationPeriodic() {
-    try {
-      field2d.setRobotPose(
-              robotPoses.floorEntry(
-                      Timer.getFPGATimestamp()
-              ).getValue());
-    } catch(NullPointerException ignored) {}
-
-    if (playing) {
-//      currentTime += Timer.
-    }
+//    try {
+//      field2d.setRobotPose(
+//              robotPoses.floorEntry(
+//                      Timer.getFPGATimestamp()
+//              ).getValue());
+//    } catch(NullPointerException ignored) {}
+//
+//    if (playing) {
+////      currentTime += Timer.
+//    }
   }
 }
