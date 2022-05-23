@@ -53,7 +53,7 @@ public class RobotContainer {
       try {
         // Create an object of filereader
         // class with CSV file as a parameter.
-        FileReader filereader = new FileReader("src/main/deploy/FRC_20220523_013329.csv");
+        FileReader filereader = new FileReader("src/main/deploy/FRC_20220523_024716.csv");
 
         // create csvReader object passing
         // file reader as a parameter
@@ -107,12 +107,12 @@ public class RobotContainer {
     try {
       field2d.setRobotPose(
               robotPoses.floorEntry(
-                      time
+                      Timer.getFPGATimestamp()
               ).getValue());
     } catch(NullPointerException ignored) {}
 
     if (playing) {
-      currentTime += Timer.
+//      currentTime += Timer.
     }
   }
 }
