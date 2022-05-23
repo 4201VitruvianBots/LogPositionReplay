@@ -39,12 +39,15 @@ public class RobotContainer {
 
   private final Field2d field2d = new Field2d();
   private Pose2d currentPose = new Pose2d();
+  private double currentTime = 0;
+  private boolean playing = true;
 
   private final TreeMap<Double,Pose2d> robotPoses = new TreeMap<>();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SmartDashboard.putData("Field2d",field2d);
+    SmartDashboard.putNumber("Time", 0);
     // Configure the button bindings
     configureButtonBindings();
       try {
@@ -104,9 +107,12 @@ public class RobotContainer {
     try {
       field2d.setRobotPose(
               robotPoses.floorEntry(
-                      Timer.getFPGATimestamp()
+                      time
               ).getValue());
-    } catch(NullPointerException ignored) {
+    } catch(NullPointerException ignored) {}
+
+    if (playing) {
+      currentTime += Timer.
     }
   }
 }
