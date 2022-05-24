@@ -5,12 +5,13 @@
       "/LiveWindow/ExampleSubsystem": "Subsystem",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/SmartDashboard/Field2d": "Field2d",
+      "/SmartDashboard/Pause": "Command",
+      "/SmartDashboard/Play": "Command",
       "/SmartDashboard/⍘": "Command",
       "/SmartDashboard/▶": "Command"
     },
     "windows": {
       "/SmartDashboard/Field2d": {
-        "image": "C:\\Users\\Josiah_Fu\\Documents\\Layover2022\\resources\\images\\field22.png",
         "window": {
           "visible": true
         }
