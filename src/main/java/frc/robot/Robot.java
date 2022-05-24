@@ -30,8 +30,7 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
 
         if (isReal()) {
-            System.out.println("This code should only be run in simulation and should not be deployed to a robot");
-            System.exit(1);
+            System.out.println("WARNING: This code is only designed to run in simulation and should not be deployed to a robot");
         }
     }
 
