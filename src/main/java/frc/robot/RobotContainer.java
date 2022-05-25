@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -47,23 +49,26 @@ public class RobotContainer {
         int poseEntryId = 0;
 
         try {
-            DataLogReader reader = new DataLogReader("src/main/deploy/FRC_20220523_024716.wpilog");
-            String[] poseParts;
+            DataLogReader reader = new DataLogReader("src/main/deploy/FRC_20220525_014322.wpilog");
             double time;
             double x, y, angle;
+            Pattern pattern = Pattern.compile("Pose2d\\(Translation2d\\(X: ([-\\d.]+), Y: ([-\\d.]+)\\), Rotation2d\\(Rads: ([-\\d.]+), Deg: [-\\d.]+\\)\\)");
+            Matcher match;
 
             for (DataLogRecord record : reader) {
                 if (record.isStart()) {
-                    if (record.getStartData().name.equals("/pose")) {
+                    if (record.getStartData().name.equals("/robotPose")) {
                         poseEntryId = record.getStartData().entry;
                     }
                 } else if (record.getEntry() == poseEntryId) {
-                    poseParts = record.getString().split(",");
-                    x = Double.parseDouble(poseParts[0]);
-                    y = Double.parseDouble(poseParts[1]);
-                    angle = Double.parseDouble(poseParts[2]);
-                    time = record.getTimestamp() / 1000000.0;
-                    robotPoses.put(time, new Pose2d(new Translation2d(x, y), new Rotation2d(angle)));
+                    match = pattern.matcher(record.getString());
+                    if (match.find()) {
+                        x = Double.parseDouble(match.group(1));
+                        y = Double.parseDouble(match.group(2));
+                        angle = Double.parseDouble(match.group(3));
+                        time = record.getTimestamp() / 1000000.0;
+                        robotPoses.put(time, new Pose2d(new Translation2d(x, y), new Rotation2d(angle)));
+                    }
                 }
             }
         } catch (Exception e) {
