@@ -12,7 +12,7 @@
     },
     "windows": {
       "/SmartDashboard/Field2d": {
-        "image": "C:\\Users\\Josiah_Fu\\Documents\\Layover2022\\resources\\images\\field22.png",
+        "image": "resources/images/field22.png",
         "window": {
           "visible": true
         }
