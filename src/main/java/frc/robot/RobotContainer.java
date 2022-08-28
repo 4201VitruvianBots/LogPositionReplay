@@ -52,7 +52,7 @@ public class RobotContainer {
             DataLogReader reader = new DataLogReader("src/main/deploy/FRC_20220525_014322.wpilog");
             double time;
             double x, y, angle;
-            Pattern pattern = Pattern.compile("Pose2d\\(Translation2d\\(X: (-?\d+(?:\\.\\d+)?), Y: (-?\d+(?:\\.\\d+)?)\\), Rotation2d\\(Rads: (-?\d+(?:\\.\\d+)?), Deg: -?\d+(?:\\.\\d+)?\\)\\)");
+            Pattern pattern = Pattern.compile("Pose2d\\(Translation2d\\(X: (-?\\d+(?:\\.\\d+)?), Y: (-?\\d+(?:\\.\\d+)?)\\), Rotation2d\\(Rads: (-?\\d+(?:\\.\\d+)?), Deg: -?\\d+(?:\\.\\d+)?\\)\\)");
             Matcher match;
 
             for (DataLogRecord record : reader) {
